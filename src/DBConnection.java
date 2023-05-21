@@ -1,0 +1,729 @@
+import java.sql.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Objects;
+
+public class DBConnection {
+    private static final String URL = "jdbc:sqlserver://192.168.1.6:1433;database=BookTrain;encrypt=true;trustservercertificate=true";
+    private static final String UserName = "mahmoud";
+    private static final String password = "mm1234mm1234";
+
+    private static Connection connection = null;
+
+    // Get connected by the database
+    public static Connection getConnection() {
+        String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+        try {
+            Class.forName(driver);
+            connection = DriverManager.getConnection(URL, UserName, password);
+
+            if (connection == null) {
+                System.out.println("Connection is null");
+            }
+            else {
+                System.out.println("Connection is not null");
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return connection;
+    }
+
+    // User Login and Sign Up
+    public static void addUser(String first_name, String middle_name, String last_name, String email, String password, String phone) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlquery = "INSERT INTO Person(person_type_id, first_name, middle_name, last_name, email, password) VALUES" +
+                    "(2, '" + first_name + "', '" + middle_name + "', '" + last_name + "', '" + email + "', '" + password + "');";
+            statement.executeUpdate(sqlquery);
+
+            sqlquery = "SELECT person_id FROM Person WHERE email = '" + email + "';";
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            String person_id = resultSet.getString("person_id");
+
+            sqlquery = "INSERT INTO PhoneNumber(person_id, phone_number) VALUES(" + person_id + ", '" + phone + "';";
+            statement.executeUpdate(sqlquery);
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static User loadUser(String email, String password) {
+        Connection connection = DBConnection.getConnection();
+        User user = null;
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "SELECT * FROM WHERE email = '" + email + "' AND password = '" + password + "';";
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+
+            if (Objects.equals(resultSet.getString("email"), email)) {
+                String first_name = resultSet.getString("first_name");
+                String middle_name = resultSet.getString("middle_name");
+                String last_name = resultSet.getString("last_name");
+                user = new User(first_name, middle_name, last_name, email, password);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    // Admin Login and Sign u[
+    public static void addAdmin(String first_name, String middle_name, String last_name, String email, String password) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlquery = "INSERT INTO Person(person_type_id, first_name, middle_name, last_name, email, password) VALUES" +
+                    "(1, '" + first_name + "', '" + middle_name + "', '" + last_name + "', '" + email + "', '" + password + "');";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static Admin loadAdmin(String email, String password) {
+        Connection connection = DBConnection.getConnection();
+        Admin admin = null;
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "SELECT * FROM WHERE email = '" + email + "' AND password = '" + password + "';";
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+
+            if (Objects.equals(resultSet.getString("email"), email)) {
+                String first_name = resultSet.getString("first_name");
+                String middle_name = resultSet.getString("middle_name");
+                String last_name = resultSet.getString("last_name");
+                admin = new Admin(first_name, middle_name, last_name, email, password);
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return admin;
+    }
+
+    // Update person details
+    public static void update_first_name(String email, String new_first_name) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlquery = "UPDATE Person SET first_name = '" + new_first_name + "' WHERE email = '" + email + "';";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void update_middle_name(String email, String new_middle_name) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlquery = "UPDATE Person SET middle_name = '" + new_middle_name + "' WHERE email = '" + email + "';";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void update_last_name(String email, String new_last_name) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlquery = "UPDATE Person SET last_name = '" + new_last_name + "' WHERE email = '" + email + "';";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void update_password(String email, String new_password) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlquery = "UPDATE Person SET password = '" + new_password + "' WHERE email = '" + email + "';";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // View trip by certain criteria
+    public static ArrayList<TripInfo> view_trips_by_date(String year, String month, String day) {
+        Connection connection = DBConnection.getConnection();
+        ArrayList<TripInfo> tripInfos = new ArrayList<TripInfo>();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlquery = "SELECT train_id, trip_source, trip_destination, trip_date, trip_duration, trip_unit_price, trip_seats FROM trip" +
+                    " WHERE YEAR(trip_date) = " + year + " AND MONTH(trip_date) = " + month + " AND DAY(trip_date) = " + day
+                    + ";";
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+
+            while (resultSet.next()) {
+                String train_id = resultSet.getString("train_id");
+                String trip_source = resultSet.getString("trip_source");
+                String trip_destination = resultSet.getString("trip_destination");
+                String trip_date = resultSet.getString("trip_date");
+                String trip_duration = resultSet.getString("trip_duration");
+                double trip_unit_price = resultSet.getDouble("trip_unit_price");
+                int trip_seats = resultSet.getInt("trip_seats");
+                tripInfos.add(new TripInfo(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_unit_price, trip_seats));
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return tripInfos;
+    }
+    public static ArrayList<TripInfo> view_trips_by_source_destination(String source, String destination) {
+        Connection connection = DBConnection.getConnection();
+        ArrayList<TripInfo> tripInfos = new ArrayList<TripInfo>();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "SELECT train_id, trip_source, trip_destination, trip_date, trip_duration, trip_unit_price, trip_seats FROM trip" +
+                    " WHERE trip_source = '" + source + "' AND trip_destination = '" + destination + "';";
+
+
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+
+            while (resultSet.next()) {
+                String train_id = resultSet.getString("train_id");
+                String trip_source = resultSet.getString("trip_source");
+                String trip_destination = resultSet.getString("trip_destination");
+                String trip_date = resultSet.getString("trip_date");
+                String trip_duration = resultSet.getString("trip_duration");
+                double trip_unit_price = resultSet.getDouble("trip_unit_price");
+                int trip_seats = resultSet.getInt("trip_seats");
+                tripInfos.add(new TripInfo(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_unit_price, trip_seats));
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return tripInfos;
+    }
+    public static ArrayList<TripInfo> view_trips_by_price(double price) {
+        Connection connection = DBConnection.getConnection();
+        ArrayList<TripInfo> tripInfos = new ArrayList<TripInfo>();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlquery = "SELECT train_id, trip_source, trip_destination, trip_date, trip_duration, trip_unit_price, trip_seats FROM trip" +
+                    " WHERE trip_unit_price = " + price + ";";
+
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+
+            while (resultSet.next()) {
+                String train_id = resultSet.getString("train_id");
+                String trip_source = resultSet.getString("trip_source");
+                String trip_destination = resultSet.getString("trip_destination");
+                String trip_date = resultSet.getString("trip_date");
+                String trip_duration = resultSet.getString("trip_duration");
+                double trip_unit_price = resultSet.getDouble("trip_unit_price");
+                int trip_seats = resultSet.getInt("trip_seats");
+                tripInfos.add(new TripInfo(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_unit_price, trip_seats));
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return tripInfos;
+    }
+    public static ArrayList<TripInfo> view_trips_available_seats(int seats) {
+        Connection connection = DBConnection.getConnection();
+        ArrayList<TripInfo> tripInfos = new ArrayList<TripInfo>();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlquery = "SELECT * FROM Trip INNER JOIN Train ON Trip.train_id = Train.train_id " +
+                    " WHERE capacity - trip_seats >= " + seats + ";";
+
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            while (resultSet.next()) {
+                String train_id = resultSet.getString("Trip.train_id");
+                String trip_source = resultSet.getString("trip_source");
+                String trip_destination = resultSet.getString("trip_destination");
+                String trip_date = resultSet.getString("trip_date");
+                String trip_duration = resultSet.getString("trip_duration");
+                double trip_unit_price = resultSet.getDouble("trip_unit_price");
+                int trip_seats = resultSet.getInt("trip_seats");
+                tripInfos.add(new TripInfo(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_unit_price, trip_seats));
+            }
+            resultSet.close();
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return tripInfos;
+    }
+
+    // Add and delete phone numbers by user
+    public static void add_phone_number(String email, String phone) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlquery = "SELECT person_id FROM Person WHERE email = '" + email + "';";
+
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            String person_id = resultSet.getString("person_id");
+
+            sqlquery = "INSERT INTO PhoneNumber(person_id, phone_number) VALUES(" + person_id + ", '" + phone + "');";
+            statement.executeUpdate(sqlquery);
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void remove_phone_number(String email, String phone) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlquery = "SELECT person_id FROM Person WHERE email = '" + email + "';";
+
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            String person_id = resultSet.getString("person_id");
+
+            sqlquery = "DELETE FROM PhoneNumber WHERE person_id = " + person_id + " AND phone_number = " + phone + ";";
+            statement.executeUpdate(sqlquery);
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Book or cancel reservations for user
+    public static void book_trip(String email, TripInfo tripInfo, int seats) {
+        // Must previously check on the available seats of the trip
+
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "SELECT person_id FROM Person WHERE email = '" + email + "';";
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            String person_id = resultSet.getString("person_id");
+
+            sqlquery = "SELECT trip_id FROM Trip WHERE train_id = '" + tripInfo.getTrain_id() + "' AND trip_source = '"
+                    + tripInfo.getTrip_source() + "' AND trip_destination = '" + tripInfo.getTrip_destination() + "' AND "
+                    + "trip_date = '" + tripInfo.getTrip_date() + "';";
+            resultSet = statement.executeQuery(sqlquery);
+            String trip_id = resultSet.getString("trip_id");
+
+            sqlquery = "INSERT INTO Reserves(person_id, trip_id, reservation_seats) VALUES(" + person_id + ", " + trip_id
+                    + ", " + seats + ");";
+            statement.executeUpdate(sqlquery);
+
+
+            sqlquery = "UPDATE Trip SET trip_seats = trip_seats + seats WHERE trip_id = " + trip_id + ";";
+            statement.executeUpdate(sqlquery);
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void cancel_booking(String email, TripInfo tripInfo) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "SELECT person_id FROM Person WHERE email = '" + email + "';";
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            String person_id = resultSet.getString("person_id");
+
+            sqlquery = "SELECT trip_id FROM Trip WHERE train_id = '" + tripInfo.getTrain_id() + "' AND trip_source = '"
+                    + tripInfo.getTrip_source() + "' AND trip_destination = '" + tripInfo.getTrip_destination() + "' AND "
+                    + "trip_date = '" + tripInfo.getTrip_date() + "';";
+            resultSet = statement.executeQuery(sqlquery);
+            String trip_id = resultSet.getString("trip_id");
+
+            sqlquery = "DELETE FROM Reserves WHERE person_id = " + person_id + " AND trip_id = " + trip_id;
+            statement.executeUpdate(sqlquery);
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Add train (Related to admin)
+    public static void add_train(int type, int capacity) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "INSERT INTO Train(train_type_id, capacity) VALUES(" + type + ", " + capacity + ");";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Update train details (Related to admin)
+    public static void update_train_capacity(int train_id, int new_capacity) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "UPDATE Train SET capacity = " + new_capacity + " WHERE train_id = " + train_id + ";";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void update_train_type(int train_id, int new_type) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "UPDATE Train SET train_type_id = " + new_type + " WHERE train_id = " + train_id + ";";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Show trains details (Related to admin)
+    public static ArrayList<TrainInfo> view_train_info() {
+        Connection connection = DBConnection.getConnection();
+        ArrayList<TrainInfo> tripInfos = new ArrayList<TrainInfo>();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "SELECT train_id, train_type_id, capacity FROM Train";
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            while (resultSet.next()) {
+                String train_id = resultSet.getString("train_id");
+                int train_type_id = resultSet.getInt("train_type_id");
+                int capacity = resultSet.getInt("capacity");
+                tripInfos.add(new TrainInfo(train_id, train_type_id, capacity));
+            }
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return tripInfos;
+    }
+
+    // Add trip (Related to admin)
+    public static void add_trip(TripInfo tripInfo) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "INSERT INTO Trip(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_price_unit) " +
+                    "VALUES('" + tripInfo.getTrain_id() + "','" + tripInfo.getTrip_source() + "', '" + tripInfo.getTrip_destination() + "', '" + tripInfo.getTrip_date()
+                    + "', '" + tripInfo.getTrip_duration() + "', '" + tripInfo.getTrip_unit_price() + "');";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void add_trip_station(TripInfo tripInfo, StationInfo stationInfo) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "SELECT trip_id FROM Trip WHERE trip_source = '" + tripInfo.getTrip_source()
+                    + "' AND trip_destination = '" + tripInfo.getTrip_destination() + "' AND " + "trip_date = '"
+                    + tripInfo.getTrip_date() + "' AND train_id = " + tripInfo.getTrain_id() + ";";
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            String trip_id = resultSet.getString("trip_id");
+
+            sqlquery = "INSERT INTO Station(trip_id, stop_name, duration) VALUES(" + stationInfo.getTrip_id() + ", '" +
+            stationInfo.getStation_name() + "', '" + stationInfo.getDuration() + "');";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Update trip details (Related to admin)
+    public static void update_trip_source(String trip_id, String new_source) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "UPDATE Trip SET trip_source = " + new_source + " WHERE trip_id = " + trip_id + ";";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void update_trip_destination(String trip_id, String new_destination) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "UPDATE Trip SET trip_destination = " + new_destination + " WHERE trip_id = " + trip_id + ";";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void update_trip_date(String trip_id, String new_date) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "UPDATE Trip SET trip_date = " + new_date + " WHERE trip_id = " + trip_id + ";";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void update_trip_duration(String trip_id, String new_duration) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "UPDATE Trip SET trip_duration = " + new_duration + " WHERE trip_id = " + trip_id + ";";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void update_trip_train_id(String trip_id, String new_train_id) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "UPDATE Trip SET train_id = " + new_train_id + " WHERE trip_id = " + trip_id + ";";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void update_trip_price_unit(String trip_id, String new_trip_price_unit) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "UPDATE Trip SET trip_price_unit = " + new_trip_price_unit + " WHERE trip_id = " + trip_id + ";";
+            statement.executeUpdate(sqlquery);
+
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Show Statistics (Related to admin)
+    public static AbstractMap.SimpleEntry<TrainInfo, Integer> show_most_train_used() {
+        Connection connection = DBConnection.getConnection();
+        AbstractMap.SimpleEntry<TrainInfo, Integer> stats = null;
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "SELECT TOP 1 Train.train_id, train_type_id, capacity, Trips\n" +
+                    "FROM (\n" +
+                    "\tSELECT train.train_id, COUNT(train.train_id) AS Trips\n" +
+                    "\tFROM Train INNER JOIN Trip \n" +
+                    "\tON Train.train_id = Trip.train_id\n" +
+                    "\tGROUP BY Train.train_id\n" +
+                    ") AS a INNER JOIN Train\n" +
+                    "ON a.train_id = Train.train_id\n" +
+                    "ORDER BY Trips DESC;";
+
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            String train_id = resultSet.getString("train_id");
+            int train_type = resultSet.getInt("train_type_id");
+            int capacity = resultSet.getInt("capacity");
+            int trips_count = resultSet.getInt("Trips");
+
+            TrainInfo trainInfo = new TrainInfo(train_id, train_type, capacity);
+            stats = new AbstractMap.SimpleEntry<>(trainInfo, trips_count);
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return stats;
+    }
+    public static AbstractMap.SimpleEntry<User, Integer> show_most_user_reserve() {
+        Connection connection = DBConnection.getConnection();
+        AbstractMap.SimpleEntry<User, Integer> stats = null;
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "SELECT TOP 1 first_name, middle_name, last_name, email, [password], cnt\n" +
+                    "FROM (\n" +
+                    "\tSELECT p.person_id, COUNT(p.person_id) AS cnt\n" +
+                    "\tFROM Person as p INNER JOIN Reserves\n" +
+                    "\tON P.person_id = Reserves.person_id\n" +
+                    "\tGROUP BY p.person_id\n" +
+                    ") AS A INNER JOIN Person\n" +
+                    "ON Person.person_id = A.person_id\n" +
+                    "ORDER BY cnt DESC;\n" +
+                    "\n" +
+                    "SELECT * FROM Reserves;";
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            String first_name = resultSet.getString("first_name");
+            String middle_name = resultSet.getString("middle_name");
+            String last_name = resultSet.getString("last_name");
+            String email = resultSet.getString("email");
+            String Password = resultSet.getString("password");
+            int reserve_count = resultSet.getInt("cnt");
+
+            User user = new User(first_name, middle_name, last_name, email, Password);
+            stats = new AbstractMap.SimpleEntry<>(user, reserve_count);
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return stats;
+    }
+    public static TripInfo show_most_trip() {
+        Connection connection = DBConnection.getConnection();
+        TripInfo tripInfo = null;
+        try {
+            Statement statement = connection.createStatement();
+
+            String sqlquery = "SELECT TOP 1 * FROM Trip\n" +
+                    "ORDER BY trip_seats DESC;";
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+
+            String train_id = resultSet.getString("train_id");
+            String trip_source = resultSet.getString("trip_source");
+            String trip_destination = resultSet.getString("trip_destination");
+            String trip_date = resultSet.getString("trip_date");
+            String trip_duration = resultSet.getString("trip_duration");
+            double trip_unit_price = resultSet.getDouble("trip_unit_price");
+            int trip_seats = resultSet.getInt("trip_seats");
+
+            tripInfo = new TripInfo(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_seats, trip_seats);
+
+            resultSet.close();
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return tripInfo;
+    }
+}
