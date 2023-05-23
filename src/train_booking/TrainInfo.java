@@ -10,22 +10,28 @@ package train_booking;
  */
 public class TrainInfo {
     private final String train_id;
-    private final int capacity;
-    private final int type;
+    private int capacity;
+    private String type;
 
-    TrainInfo(String train_id, int capacity, int type) {
+    TrainInfo(String train_id, int capacity, String type) {
         this.train_id = train_id;
         this.capacity = capacity;
         this.type = type;
     }
 
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+    public void setType(String type) {
+        this.type = type;
+    }
     public String getTrain_id() {
         return train_id;
     }
     public int getCapacity() {
         return capacity;
     }
-    public int getType() {
+    public String getType() {
         return type;
     }
 }
