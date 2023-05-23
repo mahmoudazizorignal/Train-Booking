@@ -8,12 +8,13 @@ package train_booking;
  *
  * @author mahmo
  */
-public class Add_User_Update_Profile extends javax.swing.JFrame {
+public class App_User_Update_Profile extends javax.swing.JFrame {
 
     /**
      * Creates new form Add_User_Update_Profile
      */
-    public Add_User_Update_Profile() {
+    public App_User_Update_Profile(User user) {
+        this.user = user;
         initComponents();
     }
 
@@ -61,9 +62,19 @@ public class Add_User_Update_Profile extends javax.swing.JFrame {
 
         jButton5.setFont(new java.awt.Font("Monotype Corsiva", 1, 18)); // NOI18N
         jButton5.setText("Update Name");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jButton7.setFont(new java.awt.Font("Monotype Corsiva", 1, 18)); // NOI18N
         jButton7.setText("Update Password");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         jButton6.setFont(new java.awt.Font("Monotype Corsiva", 1, 18)); // NOI18N
         jButton6.setText("Add phone");
@@ -75,6 +86,11 @@ public class Add_User_Update_Profile extends javax.swing.JFrame {
 
         jButton8.setFont(new java.awt.Font("Monotype Corsiva", 1, 18)); // NOI18N
         jButton8.setText("Remove Phone");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
 
         jLayeredPane1.setLayer(jButton5, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jLayeredPane1.setLayer(jButton7, javax.swing.JLayeredPane.DEFAULT_LAYER);
@@ -110,6 +126,11 @@ public class Add_User_Update_Profile extends javax.swing.JFrame {
 
         jButton10.setFont(new java.awt.Font("Monotype Corsiva", 1, 18)); // NOI18N
         jButton10.setText("Bach To Home");
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -139,44 +160,32 @@ public class Add_User_Update_Profile extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+        App_User_Add_Phone user_phone = new App_User_Add_Phone(user);
+        user_phone.setVisible(true);
     }//GEN-LAST:event_jButton6ActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Add_User_Update_Profile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Add_User_Update_Profile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Add_User_Update_Profile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Add_User_Update_Profile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        this.setVisible(false);
+    }//GEN-LAST:event_jButton10ActionPerformed
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Add_User_Update_Profile().setVisible(true);
-            }
-        });
-    }
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        App_User_Update_Name user_name = new App_User_Update_Name(user);
+        user_name.setVisible(true);
+    }//GEN-LAST:event_jButton5ActionPerformed
 
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        App_User_Update_Password user_password = new App_User_Update_Password(user);
+        user_password.setVisible(true);
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        App_User_Remove_Phone user_phone = new App_User_Remove_Phone(user);
+        user_phone.setVisible(true);
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+
+
+    User user = null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton5;

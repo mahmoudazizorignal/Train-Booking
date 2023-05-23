@@ -202,12 +202,12 @@ public class DBConnection {
     }
 
     // View trip by certain criteria
-    public static ArrayList<TripInfo> view_trips_by_date(String year, String month, String day) {
+    public static ArrayList<AbstractMap.SimpleEntry<TripInfo, Integer>> view_trips_by_date(String year, String month, String day) {
         Connection connection = DBConnection.getConnection();
-        ArrayList<TripInfo> tripInfos = new ArrayList<>();
+        ArrayList<AbstractMap.SimpleEntry<TripInfo, Integer>> tripInfos = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
-            String sqlquery = "SELECT train_id, trip_source, trip_destination, trip_date, trip_duration, trip_price_unit, trip_seats FROM trip" +
+            String sqlquery = "SELECT * FROM Trip INNER JOIN Train ON Trip.train_id = Train.train_id" +
                     " WHERE YEAR(trip_date) = " + year + " AND MONTH(trip_date) = " + month + " AND DAY(trip_date) = " + day
                     + ";";
             ResultSet resultSet = statement.executeQuery(sqlquery);
@@ -220,7 +220,12 @@ public class DBConnection {
                 String trip_duration = resultSet.getString("trip_duration");
                 double trip_price_unit = resultSet.getDouble("trip_price_unit");
                 int trip_seats = resultSet.getInt("trip_seats");
-                tripInfos.add(new TripInfo(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_price_unit, trip_seats));
+                int capacity = resultSet.getInt("capacity");
+                int available_seats = capacity - trip_seats;
+
+                TripInfo trip = new TripInfo(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_price_unit, trip_seats);
+                AbstractMap.SimpleEntry<TripInfo, Integer> tripInfo = new AbstractMap.SimpleEntry<>(trip, available_seats);
+                tripInfos.add(tripInfo);
             }
 
             resultSet.close();
@@ -232,13 +237,13 @@ public class DBConnection {
         }
         return tripInfos;
     }
-    public static ArrayList<TripInfo> view_trips_by_source_destination(String source, String destination) {
+    public static ArrayList<AbstractMap.SimpleEntry<TripInfo, Integer>> view_trips_by_source_destination(String source, String destination) {
         Connection connection = DBConnection.getConnection();
-        ArrayList<TripInfo> tripInfos = new ArrayList<>();
+        ArrayList<AbstractMap.SimpleEntry<TripInfo, Integer>> tripInfos = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
 
-            String sqlquery = "SELECT train_id, trip_source, trip_destination, trip_date, trip_duration, trip_price_unit, trip_seats FROM trip" +
+            String sqlquery = "SELECT * FROM Trip INNER JOIN Train ON Trip.train_id = Train.train_id" +
                     " WHERE trip_source = '" + source + "' AND trip_destination = '" + destination + "';";
 
 
@@ -252,7 +257,13 @@ public class DBConnection {
                 String trip_duration = resultSet.getString("trip_duration");
                 double trip_price_unit = resultSet.getDouble("trip_price_unit");
                 int trip_seats = resultSet.getInt("trip_seats");
-                tripInfos.add(new TripInfo(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_price_unit, trip_seats));
+                int capacity = resultSet.getInt("capacity");
+                int available_seats = capacity - trip_seats;
+                
+                TripInfo trip = new TripInfo(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_price_unit, trip_seats);
+                
+                AbstractMap.SimpleEntry<TripInfo, Integer> tripInfo = new AbstractMap.SimpleEntry<>(trip, available_seats);
+                tripInfos.add(tripInfo);
             }
 
             resultSet.close();
@@ -264,13 +275,13 @@ public class DBConnection {
         }
         return tripInfos;
     }
-    public static ArrayList<TripInfo> view_trips_by_price(double price) {
+    public static ArrayList<AbstractMap.SimpleEntry<TripInfo, Integer>> view_trips_by_price(double price) {
         Connection connection = DBConnection.getConnection();
-        ArrayList<TripInfo> tripInfos = new ArrayList<TripInfo>();
+        ArrayList<AbstractMap.SimpleEntry<TripInfo, Integer>> tripInfos = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
-            String sqlquery = "SELECT train_id, trip_source, trip_destination, trip_date, trip_duration, trip_price_unit, trip_seats FROM trip" +
-                    " WHERE trip_price_unit = " + price + ";";
+            String sqlquery = "SELECT * FROM Trip INNER JOIN Train ON Trip.train_id = Train.train_id" +
+                    " WHERE trip_price_unit <= " + price + ";";
 
             ResultSet resultSet = statement.executeQuery(sqlquery);
 
@@ -282,7 +293,14 @@ public class DBConnection {
                 String trip_duration = resultSet.getString("trip_duration");
                 double trip_price_unit = resultSet.getDouble("trip_price_unit");
                 int trip_seats = resultSet.getInt("trip_seats");
-                tripInfos.add(new TripInfo(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_price_unit, trip_seats));
+                
+                int capacity = resultSet.getInt("capacity");
+                int available_seats = capacity - trip_seats;
+                
+                TripInfo trip = new TripInfo(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_price_unit, trip_seats);
+                
+                AbstractMap.SimpleEntry<TripInfo, Integer> tripInfo = new AbstractMap.SimpleEntry<>(trip, available_seats);
+                tripInfos.add(tripInfo);
             }
 
             resultSet.close();
@@ -294,9 +312,9 @@ public class DBConnection {
         }
         return tripInfos;
     }
-    public static ArrayList<TripInfo> view_trips_available_seats(int seats) {
+    public static ArrayList<AbstractMap.SimpleEntry<TripInfo, Integer>> view_trips_available_seats(int seats) {
         Connection connection = DBConnection.getConnection();
-        ArrayList<TripInfo> tripInfos = new ArrayList<TripInfo>();
+        ArrayList<AbstractMap.SimpleEntry<TripInfo, Integer>> tripInfos = new ArrayList<>();
         try {
             Statement statement = connection.createStatement();
             String sqlquery = "SELECT * FROM Trip INNER JOIN Train ON Trip.train_id = Train.train_id " +
@@ -311,7 +329,48 @@ public class DBConnection {
                 String trip_duration = resultSet.getString("trip_duration");
                 double trip_price_unit = resultSet.getDouble("trip_price_unit");
                 int trip_seats = resultSet.getInt("trip_seats");
-                tripInfos.add(new TripInfo(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_price_unit, trip_seats));
+                
+                int capacity = resultSet.getInt("capacity");
+                int available_seats = capacity - trip_seats;
+                
+                TripInfo trip = new TripInfo(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_price_unit, trip_seats);
+                
+                AbstractMap.SimpleEntry<TripInfo, Integer> tripInfo = new AbstractMap.SimpleEntry<>(trip, available_seats);
+                tripInfos.add(tripInfo);
+            }
+            resultSet.close();
+            statement.close();
+            connection.close();
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return tripInfos;
+    }
+    public static ArrayList<AbstractMap.SimpleEntry<TripInfo, Integer>> view_trips() {
+        Connection connection = DBConnection.getConnection();
+        ArrayList<AbstractMap.SimpleEntry<TripInfo, Integer>> tripInfos = new ArrayList<>();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlquery = "SELECT * FROM Trip INNER JOIN Train ON Trip.train_id = Train.train_id;";
+
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            while (resultSet.next()) {
+                String train_id = resultSet.getString("train_id");
+                String trip_source = resultSet.getString("trip_source");
+                String trip_destination = resultSet.getString("trip_destination");
+                String trip_date = resultSet.getString("trip_date");
+                String trip_duration = resultSet.getString("trip_duration");
+                double trip_price_unit = resultSet.getDouble("trip_price_unit");
+                int trip_seats = resultSet.getInt("trip_seats");
+                
+                int capacity = resultSet.getInt("capacity");
+                int available_seats = capacity - trip_seats;
+                
+                TripInfo trip = new TripInfo(train_id, trip_source, trip_destination, trip_date, trip_duration, trip_price_unit, trip_seats);
+                
+                AbstractMap.SimpleEntry<TripInfo, Integer> tripInfo = new AbstractMap.SimpleEntry<>(trip, available_seats);
+                tripInfos.add(tripInfo);
             }
             resultSet.close();
             statement.close();
@@ -367,9 +426,34 @@ public class DBConnection {
             e.printStackTrace();
         }
     }
+    public static boolean is_phone_exist(String email, String phone) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            
+            String sqlquery = "SELECT person_id FROM Person WHERE email = '" + email + "';";
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            resultSet.next();
+            String person_id = resultSet.getString("person_id");
+
+            sqlquery = "SELECT phone_number FROM PhoneNumber WHERE phone_number = '" + phone + "';";
+            resultSet = statement.executeQuery(sqlquery);
+            resultSet.next();
+            String tmp = resultSet.getString("phone_number");
+            
+            resultSet.close();
+            statement.close();
+            connection.close();
+
+        }
+        catch(SQLException e) {
+            return false;
+        }
+        return true;
+    }
 
     // Book or cancel reservations for user
-    public static void book_trip(String email, TripInfo tripInfo, int seats) {
+    public static void book_trip(String email, TripBookingInfo tripInfo, int seats) {
         // Must previously check on the available seats of the trip
 
         Connection connection = DBConnection.getConnection();
@@ -381,13 +465,14 @@ public class DBConnection {
             resultSet.next();
             String person_id = resultSet.getString("person_id");
 
-            sqlquery = "SELECT trip_id FROM Trip WHERE train_id = '" + tripInfo.getTrain_id() + "' AND trip_source = '"
+            sqlquery = "SELECT trip_id FROM Trip WHERE trip_source = '"
                     + tripInfo.getTrip_source() + "' AND trip_destination = '" + tripInfo.getTrip_destination() + "' AND "
                     + "trip_date = '" + tripInfo.getTrip_date() + "';";
             resultSet = statement.executeQuery(sqlquery);
             resultSet.next();
             String trip_id = resultSet.getString("trip_id");
-
+            
+            
             sqlquery = "INSERT INTO Reserves(person_id, trip_id, reservation_seats) VALUES(" + person_id + ", " + trip_id
                     + ", " + seats + ");";
             statement.executeUpdate(sqlquery);
@@ -405,7 +490,7 @@ public class DBConnection {
             e.printStackTrace();
         }
     }
-    public static void cancel_booking(String email, TripInfo tripInfo) {
+    public static void cancel_booking(String email, TripBookingInfo tripInfo) {
         Connection connection = DBConnection.getConnection();
         try {
             Statement statement = connection.createStatement();
@@ -415,7 +500,7 @@ public class DBConnection {
             resultSet.next();
             String person_id = resultSet.getString("person_id");
 
-            sqlquery = "SELECT trip_id FROM Trip WHERE train_id = '" + tripInfo.getTrain_id() + "' AND trip_source = '"
+            sqlquery = "SELECT trip_id FROM Trip WHERE trip_source = '"
                     + tripInfo.getTrip_source() + "' AND trip_destination = '" + tripInfo.getTrip_destination() + "' AND "
                     + "trip_date = '" + tripInfo.getTrip_date() + "';";
             resultSet = statement.executeQuery(sqlquery);
@@ -442,7 +527,78 @@ public class DBConnection {
             e.printStackTrace();
         }
     }
-
+    public static boolean isTripExist(TripBookingInfo tripInfo) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            
+            String sqlquery = "SELECT * FROM Trip INNER JOIN Train ON Trip.train_id = Train.train_id WHERE trip_source = '"
+                    + tripInfo.getTrip_source() + "' AND trip_destination = '" + tripInfo.getTrip_destination() + "' AND "
+                    + "trip_date = '" + tripInfo.getTrip_date() + "';";
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            resultSet.next();
+            
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch(SQLException e) {
+            return false;
+        }
+        return true;
+    }
+    public static boolean isMadeReservation(String email, TripBookingInfo tripInfo) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            
+            String sqlquery = "SELECT person_id FROM Person WHERE email = '" + email + "';";
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            resultSet.next();
+            String person_id = resultSet.getString("person_id");
+            
+            sqlquery = "SELECT trip_id FROM Trip WHERE trip_source = '"
+                    + tripInfo.getTrip_source() + "' AND trip_destination = '" + tripInfo.getTrip_destination() + "' AND "
+                    + "trip_date = '" + tripInfo.getTrip_date() + "';";
+            resultSet = statement.executeQuery(sqlquery);
+            resultSet.next();
+            String trip_id = resultSet.getString("trip_id");
+            
+            sqlquery = "SELECT * FROM Reserves WHERE person_id = " + person_id + " AND trip_id = " + trip_id + ";";
+            resultSet = statement.executeQuery(sqlquery);
+            resultSet.next();
+            
+            String tmp = resultSet.getString("reservation_id");
+            
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
+    }
+    public static boolean hasEnoughSeats(TripBookingInfo tripInfo, int seats) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            Statement statement = connection.createStatement();
+            
+            String sqlquery = "SELECT * FROM Trip INNER JOIN Train ON Trip.train_id = Train.train_id WHERE trip_source = '"
+                    + tripInfo.getTrip_source() + "' AND trip_destination = '" + tripInfo.getTrip_destination() + "' AND "
+                    + "trip_date = '" + tripInfo.getTrip_date() + "';";
+            ResultSet resultSet = statement.executeQuery(sqlquery);
+            
+            int available_seats = resultSet.getInt("capacity") - resultSet.getInt("trip_seats");
+            if (seats > available_seats)
+                return false;
+            
+            resultSet.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
+    }
+    
     // Add train (Related to admin)
     public static void add_train(int type, int capacity) {
         Connection connection = DBConnection.getConnection();
