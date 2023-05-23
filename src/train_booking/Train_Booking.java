@@ -18,7 +18,8 @@ public class Train_Booking {
      */
     public static void main(String[] args) {
         //DBConnection.update_trip_price_unit(new TripInfo("3", "Giza", "Sinai", "2019-08-14 06:00:00", "08:00:00", 75.5, 0), 120);
-        
+        App_Home_Page home_page = new App_Home_Page();
+        home_page.setVisible(true);
     }
     
 }
