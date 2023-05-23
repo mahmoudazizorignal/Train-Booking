@@ -53,7 +53,7 @@ CREATE TABLE Trip (
     trip_price_unit DECIMAL NOT NULL,
     trip_seats INT NOT NULL DEFAULT 0,
 
-    CONSTRAINT chk_trip UNIQUE(trip_id, trip_date, trip_source, trip_destination)
+    CONSTRAINT chk_trip UNIQUE(trip_date, trip_source, trip_destination)
 );
 
 
