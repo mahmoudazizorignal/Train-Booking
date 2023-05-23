@@ -225,6 +225,7 @@ public class App_User_Sign_Up extends javax.swing.JFrame {
         String email = jTextField4.getText();
         String password = String.copyValueOf(jPasswordField1.getPassword());        
         String password_confirm = String.copyValueOf(jPasswordField1.getPassword());
+        String phone = jTextField6.getText();
 
         if (password == null ? password_confirm != null : !password.equals(password_confirm)) {
             JOptionPane.showMessageDialog(null, "The password does not match", "Sign Up Failed", JOptionPane.WARNING_MESSAGE);
@@ -240,8 +241,10 @@ public class App_User_Sign_Up extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "The email cannot be empty", "Sign Up Failed", JOptionPane.WARNING_MESSAGE);
             else if (password == null)
                 JOptionPane.showMessageDialog(null, "The password cannot be empty", "Sign Up Failed", JOptionPane.WARNING_MESSAGE);
+            else if (phone == null)
+                JOptionPane.showMessageDialog(null, "The phone cannot be empty", "Sign Up Failed", JOptionPane.WARNING_MESSAGE);
             else {
-                DBConnection.addUser(first_name, middle_name, last_name, email, password, email);
+                DBConnection.addUser(first_name, middle_name, last_name, email, password, phone);
                 JOptionPane.showMessageDialog(null, "Sign Up is done successfully", "Sign Up Success", JOptionPane.INFORMATION_MESSAGE);
                 this.setVisible(false);
             }
