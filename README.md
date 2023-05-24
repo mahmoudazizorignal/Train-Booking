@@ -36,6 +36,7 @@ To get started with the Train Booking application, follow the steps below:
 
 ```diff
 - git clone https://github.com/your-username/train-booking.git
+'''
 
 2. Set up a Java development environment, such as NetBeans or any other IDE of your choice.
 
