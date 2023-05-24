@@ -34,9 +34,10 @@ To get started with the Train Booking application, follow the steps below:
 
 1. Clone the repository to your local machine using the following command:
 
-```diff
-- git clone https://github.com/your-username/train-booking.git
-```
+<kbd style="background-color: black; color: white; padding: 5px;">
+git clone https://github.com/your-username/train-booking.git
+</kbd>
+
 
 2. Set up a Java development environment, such as NetBeans or any other IDE of your choice.
 
