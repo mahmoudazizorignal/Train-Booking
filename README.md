@@ -69,10 +69,6 @@ If you wish to contribute to this Train Booking project, you can follow these st
 
 The project maintainers will review your contribution and provide feedback or merge it into the main repository.
 
-## License
-
-This Train Booking project is released under the [MIT License](LICENSE). You are free to modify and distribute the codebase as per the terms and conditions of the license.
-
 ## Contact
 
 If you have any questions or suggestions regarding this project, feel free to contact the project maintainers:
