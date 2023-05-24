@@ -74,7 +74,6 @@ This Train Booking project is released under the [MIT License](LICENSE). You are
 
 If you have any questions or suggestions regarding this project, feel free to contact the project maintainers:
 
-- John Doe (john.doe@example.com)
-- Jane Smith (jane.smith@example.com)
+- Mahmoud Mamdouh (mahmoudazizorignal@gmail.com)
 
 We appreciate your interest in our Train Booking project and look forward to your valuable contributions!
